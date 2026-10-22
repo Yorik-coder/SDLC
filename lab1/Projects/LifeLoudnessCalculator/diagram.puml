@@ -1,0 +1,71 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "LifeLoudnessCalculator" {
+
+    class Program {
+        + {static} Main() : void
+    }
+
+    class LifeNoiseModel {
+        + TalkCount : int {get;}
+        + MusicCount : int {get;}
+        + SwearCount : int {get;}
+        + NoiseScore : int {get;}
+        + Recommendation : string {get;}
+        + event ModelChanged : EventHandler
+        + UpdateData(talk : int, music : int, swear : int) : void
+        - CalculateNoiseAndRecommendation() : void
+    }
+
+    class LifeNoiseController {
+        - _model : LifeNoiseModel
+        - _parentForm : Form
+        + LifeNoiseController(model : LifeNoiseModel, parentForm : Form)
+        + OpenInputWindow() : void
+    }
+
+    class MainForm {
+        - _model : LifeNoiseModel
+        - _controller : LifeNoiseController
+        - lblTalkResult : Label
+        - lblMusicResult : Label
+        - lblSwearResult : Label
+        - lblScoreResult : Label
+        - lblRecommendationResult : Label
+        - btnOpenInput : Button
+        + MainForm(model : LifeNoiseModel)
+        - UpdateView() : void
+    }
+
+    class InputForm {
+        + txtTalk : TextBox
+        + txtMusic : TextBox
+        + txtSwear : TextBox
+        + btnSave : Button
+        + InputForm(currentTalk : int, currentMusic : int, currentSwear : int)
+    }
+}
+
+class "System.Windows.Forms.Form" as Form
+
+Form <|-- MainForm
+Form <|-- InputForm
+
+Program ..> MainForm : "создает"
+Program ..> LifeNoiseModel : "создает"
+
+MainForm "1" o-- "1" LifeNoiseModel : "подписка / чтение"
+MainForm "1" o-- "1" LifeNoiseController : "вызов функций"
+
+LifeNoiseController "1" o-- "1" LifeNoiseModel : "обновление данных"
+LifeNoiseController ..> InputForm : "создает и открывает"
+
+@enduml
